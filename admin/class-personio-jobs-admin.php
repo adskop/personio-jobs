@@ -117,7 +117,7 @@ class Personio_Jobs_Admin {
 		public function plugin_settings_page_content() { ?>
     <div class="wrap">
 
-        <h2>My Awesome Settings Page</h2>
+        <h2>Personio Job Settings</h2>
         <form method="post" action="options.php">
             <?php
                 settings_fields( 'smashing_fields' );
