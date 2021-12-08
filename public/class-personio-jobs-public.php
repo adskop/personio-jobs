@@ -102,7 +102,7 @@ class Personio_Jobs_Public {
 				$d = 'http://';
 		}
 
-		$positions = simplexml_load_file($d . $hostname . '-jobs.personio.de/xml?language=' . $lang);
+		$positions = simplexml_load_file($d . $hostname . '.jobs.personio.de/xml?language=' . $lang);
 
 		$categories = [];
 		foreach ($positions->position as $position) {
