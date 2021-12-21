@@ -102,17 +102,44 @@ class Personio_Jobs_Public {
             $d = 'http://';
         }
 
-        $positions = simplexml_load_file($d . $hostname . '.jobs.personio.de/xml?language=' . $lang);
-        $positions = $this->XML2Array($positions);
-        //$positions = $positions['position'][0];
-        echo "<pre>"; var_dump($positions); echo "</pre>";
+        //require_once(post-creator.php);
+        //$pc = new Creator();
 
-        $categories = [];
+        $path = $d . $hostname . '.jobs.personio.de/xml?language=' . $lang;
+        $positions = simplexml_load_file($path);
+
+        //echo "<pre>"; print_r($positions); echo "</pre>";
+
+        $i = 0;
         foreach ($positions as $position) {
-            $category = (string)$position->recruitingCategory;
-            if ($category && !in_array($category, $categories)) {
-                $categories[] = $category;
+            $content = '';
+            $id = $positions->position->$i->id;
+            $subcompany = $positions->position->$i->subcompany;
+            $office = $positions->position->$i->office;
+            $department = $positions->position->$i->department;
+            $recruitingCategory = $positions->position->$i->recruitingCategory;
+            $name = $positions->position->$i->name;
+
+            $content .= $id;
+            $content .= $subcompany;
+            $content .= $office;
+            $content .= $department;
+            $content .= $recruitingCategory;
+            $content .= $name;
+
+
+            for($j = 0; $j < 5; $j++){
+                $data1 = $positions->position->$i->jobDescriptions->jobDescription->$j->name;
+                $data2 = $positions->position->$i->jobDescriptions->jobDescription->$j->value;
+
+                $content .= strip_tags($data1);
+                $content .= strip_tags($data2);
+
             }
+
+            //$pc->PostCreator($name,'page',$content,array( 1, 2 ),'',1,'publish');
+echo $content;
+            $i++;
         }
 
         $translations = $this->get_translations();
@@ -285,25 +312,5 @@ class Personio_Jobs_Public {
             return false;
         }
     }
-
-
-
-    private function XML2Array($parent){
-
-        $array = json_decode(json_encode((array) $parent), true);
-        //$array = array($xml->getName() => $array);
-
-        /*
-        foreach ($parent as $name => $element) {
-        ($node = & $array[$name])
-        && (1 === count($node) ? $node = array($node) : 1)
-        && $node = & $node[];
-
-        $node = $element->count() ? XML2Array($element) : trim($element);
-        } */
-
-        return $array;
-    }
-
 
 }

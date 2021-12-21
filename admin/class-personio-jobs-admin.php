@@ -131,19 +131,19 @@ class Personio_Jobs_Admin {
 
 		public function setup_sections() {
 
-		add_settings_section( 'our_first_section', 'My First Section Title', array( $this, 'section_callback' ), 'smashing_fields' );
-    add_settings_section( 'our_second_section', 'My Second Section Title', array( $this, 'section_callback' ), 'smashing_fields' );
-    add_settings_section( 'our_third_section', 'My Third Section Title', array( $this, 'section_callback' ), 'smashing_fields' );
+        add_settings_section( 'our_first_section', ' Personio-Subdomain', array( $this, 'section_callback' ), 'smashing_fields' );
+        add_settings_section( 'our_second_section', 'cron-Job', array( $this, 'section_callback' ), 'smashing_fields' );
+        add_settings_section( 'our_third_section', 'My Third Section Title', array( $this, 'section_callback' ), 'smashing_fields' );
 
 		}
 
 		public function section_callback( $arguments ) {
 			switch( $arguments['id'] ){
 	        case 'our_first_section':
-	            echo 'This is the first description here!';
+	            echo 'Personio-Subdomain description here!';
 	            break;
 	        case 'our_second_section':
-	            echo 'This one is number two';
+	            echo 'cron-Job description here!';
 	            break;
 	        case 'our_third_section':
 	            echo 'Third time is the charm!';
@@ -184,7 +184,18 @@ class Personio_Jobs_Admin {
             'helper' => 'For example, Tech or Sales',
             'supplemental' => 'in small letters',
             'default' => ''
-        )
+        ),
+                array(
+            'uid' => 'personio-cron',
+            'label' => 'cron-Job Intervall',
+            'section' => 'our_second_section',
+            'type' => 'select',
+            'options' => false,
+            'placeholder' => 'for example once a day',
+            'helper' => 'Selection of how often the XML file should be called and the jobs updated',
+            'supplemental' => '',
+            'default' => ''
+        ),
 
     );
 
@@ -205,7 +216,6 @@ public function field_callback( $arguments ) {
 						printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], $arguments['type'], $arguments['placeholder'], $value );
 						break;
 			 case 'checkbox':
-
 			 if($value) :
 
 				 printf( '<input name="%1$s" id="%1$s" type="%2$s" value="%3$s" checked="checked" />', $arguments['uid'], $arguments['type'], $value );
@@ -213,6 +223,18 @@ public function field_callback( $arguments ) {
 				 printf( '<input name="%1$s" id="%1$s" type="%2$s" value="%3$s" />', $arguments['uid'], $arguments['type'], true );
 			 endif;
 			 break;
+            case 'select':
+                printF('
+                <select name="duration" id="duration">
+                  <option value="60">every minute</option>
+                  <option value="3600">every hour</option>
+                  <option value="43200">every 12 hours</option>
+                  <option value="86400">every day</option>
+                  <option value="172800">every 2nd day</option>
+                  <option value="604800">every week</option>
+                </select>
+                ');
+                break;
 		}
 
 		// If there is help text

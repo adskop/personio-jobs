@@ -29,8 +29,13 @@ class Personio_Jobs_Activator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function activate() {
+    public static function activate() {
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/crate-custom-table.php';
+     custom_create_db();
 
-	}
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/cron-job-xml.php';
+        cronstarter_activation();
+    }
+
 
 }
