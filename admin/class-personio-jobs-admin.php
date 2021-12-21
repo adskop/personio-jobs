@@ -231,7 +231,7 @@ public function field_callback( $arguments ) {
                   <option value="43200">every 12 hours</option>
                   <option value="86400">every day</option>
                   <option value="172800">every 2nd day</option>
-                  <option value="604800">every weeek</option>
+                  <option value="604800">every week</option>
                 </select>
                 ');
                 break;
