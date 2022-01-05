@@ -102,13 +102,14 @@ class Personio_Jobs_Public {
             $d = 'http://';
         }
 
-        //require_once(post-creator.php);
-        //$pc = new Creator();
+        require_once('post-creator1.php');
+
+        global $wpdb;
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        $table_name = $wpdb->prefix . 'personio2wordpress';
 
         $path = $d . $hostname . '.jobs.personio.de/xml?language=' . $lang;
         $positions = simplexml_load_file($path);
-
-        //echo "<pre>"; print_r($positions); echo "</pre>";
 
         $i = 0;
         foreach ($positions as $position) {
@@ -120,25 +121,33 @@ class Personio_Jobs_Public {
             $recruitingCategory = $positions->position->$i->recruitingCategory;
             $name = $positions->position->$i->name;
 
-            $content .= $id;
-            $content .= $subcompany;
-            $content .= $office;
-            $content .= $department;
-            $content .= $recruitingCategory;
-            $content .= $name;
+            $content .= "<div class='id'>".$id."</div>";
+            $content .= "<div class='subcompany'>".$subcompany."</div>";
+            $content .= "<div class='office'>".$office."</div>";
+            $content .= "<div class='department'>".$department."</div>";
+            $content .= "<div class='recruitingCategory'>".$recruitingCategory."</div>";
+            $content .= "<div class='name'>".$name."</div>";
 
 
             for($j = 0; $j < 5; $j++){
                 $data1 = $positions->position->$i->jobDescriptions->jobDescription->$j->name;
                 $data2 = $positions->position->$i->jobDescriptions->jobDescription->$j->value;
 
-                $content .= strip_tags($data1);
-                $content .= strip_tags($data2);
+                $content .= "<div class='DescriptionName$j'>".strip_tags($data1)."</div>";
+                $content .= "<div class='DescriptionValue$j'>".strip_tags($data2)."</div>";
 
             }
 
-            //$pc->PostCreator($name,'page',$content,array( 1, 2 ),'',1,'publish');
-echo $content;
+            $test = "1";  //must be changed to 2 so that the jobs can be generated
+
+            if ($test == 2){
+                $post_id = postcreator($name,$content,'publish',' 442123924562346','page');
+                //442123924562346 is the authors id to see in the database which page the plugin has generated
+                $sql = "INSERT INTO $table_name (personioid, wordpressid) VALUES ($id,$post_id)";
+                dbDelta( $sql );
+            }
+
+            //echo $content;  //uncomment to watch content
             $i++;
         }
 

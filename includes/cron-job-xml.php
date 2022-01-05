@@ -32,13 +32,13 @@ function my_repeat_function() {
 add_action ('mycronjob', 'my_repeat_function');
 
 // add custom interval
-function cron_add_minute( $schedules ) {
+function cron_add_hour( $schedules ) {
 // Adds once every minute to the existing schedules.
-    $schedules['everyminute'] = array(
-        'interval' => 60,
-        'display' => __( 'Once Every Minute' )
+    $schedules['everyhour'] = array(
+        'interval' => 3600,
+        'display' => __( 'Once Every Hour' )
     );
     return $schedules;
 }
-add_filter( 'cron_schedules', 'cron_add_minute' );
+add_filter( 'cron_schedules', 'cron_add_hour' );
 
