@@ -86,71 +86,7 @@ class Personio_Jobs_Public {
      */
     public function load_jobs($lang = 'en', $categorized = ''){
 
-        // Draw job postings from Personio API
-
-        if($this->is_wpml_active()) {
-            $lang = ICL_LANGUAGE_CODE; // Depending on implementation of multilingual content
-        }
-
-        $hostname = get_option('personio-host');
-        $company = get_option('personio-company');
-        $categorized = get_option('personio-categorized');
-
-        if (is_ssl()) {
-            $d = 'https://';
-        } else {
-            $d = 'http://';
-        }
-
-        require_once('post-creator1.php');
-
-        global $wpdb;
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        $table_name = $wpdb->prefix . 'personio2wordpress';
-
-        $path = $d . $hostname . '.jobs.personio.de/xml?language=' . $lang;
-        $positions = simplexml_load_file($path);
-
-        $i = 0;
-        foreach ($positions as $position) {
-            $content = '';
-            $id = $positions->position->$i->id;
-            $subcompany = $positions->position->$i->subcompany;
-            $office = $positions->position->$i->office;
-            $department = $positions->position->$i->department;
-            $recruitingCategory = $positions->position->$i->recruitingCategory;
-            $name = $positions->position->$i->name;
-
-            $content .= "<div class='id'>".$id."</div>";
-            $content .= "<div class='subcompany'>".$subcompany."</div>";
-            $content .= "<div class='office'>".$office."</div>";
-            $content .= "<div class='department'>".$department."</div>";
-            $content .= "<div class='recruitingCategory'>".$recruitingCategory."</div>";
-            $content .= "<div class='name'>".$name."</div>";
-
-
-            for($j = 0; $j < 5; $j++){
-                $data1 = $positions->position->$i->jobDescriptions->jobDescription->$j->name;
-                $data2 = $positions->position->$i->jobDescriptions->jobDescription->$j->value;
-
-                $content .= "<div class='DescriptionName$j'>".strip_tags($data1)."</div>";
-                $content .= "<div class='DescriptionValue$j'>".strip_tags($data2)."</div>";
-
-            }
-
-            $test = "1";  //must be changed to 2 so that the jobs can be generated
-
-            if ($test == 2){
-                $post_id = postcreator($name,$content,'publish',' 442123924562346','page');
-                //442123924562346 is the authors id to see in the database which page the plugin has generated
-                $sql = "INSERT INTO $table_name (personioid, wordpressid) VALUES ($id,$post_id)";
-                dbDelta( $sql );
-            }
-
-            //echo $content;  //uncomment to watch content
-            $i++;
-        }
-
+     /*
         $translations = $this->get_translations();
 
         // Print job postings
@@ -164,7 +100,7 @@ class Personio_Jobs_Public {
         } else {
             $this->display_jobs_list($sortedJobs);
         }
-
+*/
     }
 
     /**

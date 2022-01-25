@@ -133,20 +133,15 @@ class Personio_Jobs_Admin {
 
         add_settings_section( 'our_first_section', ' Personio-Subdomain', array( $this, 'section_callback' ), 'smashing_fields' );
         add_settings_section( 'our_second_section', 'cron-Job', array( $this, 'section_callback' ), 'smashing_fields' );
-        add_settings_section( 'our_third_section', 'My Third Section Title', array( $this, 'section_callback' ), 'smashing_fields' );
 
 		}
 
 		public function section_callback( $arguments ) {
 			switch( $arguments['id'] ){
 	        case 'our_first_section':
-	            echo 'Personio-Subdomain description here!';
 	            break;
 	        case 'our_second_section':
-	            echo 'cron-Job description here!';
-	            break;
-	        case 'our_third_section':
-	            echo 'Third time is the charm!';
+	            echo 'Ein CronJob ist eine Aufgabe, die in Betriebssystemen automatisiert abläuft.';
 	            break;
 	    }
 	}
@@ -155,48 +150,71 @@ class Personio_Jobs_Admin {
     $fields = array(
         array(
             'uid' => 'personio-host',
-            'label' => 'The host name',
+            'label' => 'Host Name',
             'section' => 'our_first_section',
             'type' => 'text',
             'options' => false,
-            'placeholder' => 'for example alphabet',
-            'helper' => 'You can find it in the URL of your Personio company profile',
-            'supplemental' => 'in small letters',
+            'placeholder' => '',
+            'helper' => 'Sie finden den Host Name in der URL Ihres Personio-Unternehmensprofils',
+            'supplemental' => 'in Kleinbuchstaben',
             'default' => ''
         ),
 				array(
             'uid' => 'personio-company',
-            'label' => 'The company name',
+            'label' => 'Name des Unternehmens',
             'section' => 'our_first_section',
             'type' => 'text',
             'options' => false,
-            'placeholder' => 'for example google',
-            'helper' => 'A host can have multiple companies too. Use this if you only want to display the jobs from one specific subcompany or subsidiary',
-            'supplemental' => 'in small letters',
-            'default' => ''
-        ),
-				array(
-            'uid' => 'personio-categorized',
-            'label' => 'Show categorized by department',
-            'section' => 'our_first_section',
-            'type' => 'checkbox',
-            'options' => false,
-            'helper' => 'For example, Tech or Sales',
-            'supplemental' => 'in small letters',
-            'default' => ''
-        ),
-                array(
-            'uid' => 'personio-cron',
-            'label' => 'cron-Job Intervall',
-            'section' => 'our_second_section',
-            'type' => 'select',
-            'options' => false,
-            'placeholder' => 'for example once a day',
-            'helper' => 'Selection of how often the XML file should be called and the jobs updated',
-            'supplemental' => '',
+            'placeholder' => '',
+            'helper' => 'Ein Host kann auch mehrere Unternehmen haben. Verwenden Sie diese Option, wenn Sie nur die Stellenanzeigen eines bestimmten Teilunternehmens oder einer Tochtergesellschaft anzeigen möchten',
+            'supplemental' => 'in Kleinbuchstaben',
             'default' => ''
         ),
 
+        array(
+            'uid' => 'personio-cron-on-off',
+            'label' => 'An-/Aus- schalten',
+            'section' => 'our_second_section',
+            'type' => 'checkbox',
+            'options' => false,
+            'placeholder' => '',
+            'helper' => 'CronJob ein oder ausschalten (ist das Häkchen gesetzt ist der CronJob aktiviert)',
+            'supplemental' => '',
+            'default' => ''
+        ),
+                array(
+            'uid' => 'personio-cron-intervall',
+            'label' => 'Intervall',
+            'section' => 'our_second_section',
+            'type' => 'select',
+            'options' => false,
+            'placeholder' => '',
+            'helper' => 'Auswahl wie oft der CronJob die Stellenanzeige generien/updaten/löschen soll. (Standardmäßig ist "Jede Stunde" eingestellt)',
+            'supplemental' => '',
+            'default' => ''
+        ),
+        array(
+            'uid' => 'personio-cron-email-on-off',
+            'label' => 'An-/Aus- schalten für eine Bestätigungsmail',
+            'section' => 'our_second_section',
+            'type' => 'checkbox',
+            'options' => false,
+            'placeholder' => '',
+            'helper' => 'Bestätigungsmail ein oder ausschalten (ist das Häkchen gesetzt ist die Bestätigungsmail aktiviert)',
+            'supplemental' => '',
+            'default' => ''
+        ),
+        array(
+            'uid' => 'personio-cron-email',
+            'label' => 'E-Mail Adresse',
+            'section' => 'our_second_section',
+            'type' => 'text',
+            'options' => false,
+            'placeholder' => 'name@mail.com',
+            'helper' => 'E-Mail Adresse für die Bestätigungsmail',
+            'supplemental' => '',
+            'default' => ''
+        ),
     );
 
     foreach( $fields as $field ){
@@ -205,7 +223,25 @@ class Personio_Jobs_Admin {
     	};
 	}
 public function field_callback( $arguments ) {
-		$value = get_option( $arguments['uid'] ); // Get the current value, if there is one
+    require_once( ABSPATH . 'wp-content/plugins/personio-jobs/public/post-creator1.php' );
+    $cronIntervall = getCronIntervall();
+    $cronIntervallName = "";
+
+    if($cronIntervall === 0){
+        $cronIntervallName = "Bitte auswählen";
+    }elseif($cronIntervall == "everyminute"){
+        $cronIntervallName = "Jede Minute";
+    }elseif($cronIntervall == "everyhalfhour"){
+        $cronIntervallName = "Jede halbe Stunde";
+    } elseif($cronIntervall == "everyhour"){
+        $cronIntervallName = "Jede Stunde";
+    }elseif($cronIntervall == "twiceday"){
+        $cronIntervallName = "Zweimal Täglich";
+    }elseif($cronIntervall == "onceday"){
+        $cronIntervallName = "Einmal Täglich";
+    }
+
+    $value = get_option( $arguments['uid'] ); // Get the current value, if there is one
 		if( ! $value ) { // If no value exists
 				$value = $arguments['default']; // Set to our default
 		}
@@ -225,15 +261,15 @@ public function field_callback( $arguments ) {
 			 break;
             case 'select':
                 printF('
-                <select name="duration" id="duration">
-                  <option value="60">every minute</option>
-                  <option value="3600">every hour</option>
-                  <option value="43200">every 12 hours</option>
-                  <option value="86400">every day</option>
-                  <option value="172800">every 2nd day</option>
-                  <option value="604800">every week</option>
+                <select name="%1$s" id="%1$s">
+                 <option value="'.$cronIntervall.'" disabled selected hidden>'.$cronIntervallName.'</option>
+                  <option value="everyminute">Jede Minute</option>
+                  <option value="everyhalfhour">Jede halbe Stunde</option>
+                  <option value="everyhour">Jede Stunde</option>
+                  <option value="twiceday">Zweimal Täglich</option>
+                  <option value="onceday">Einmal Täglich</option>
                 </select>
-                ');
+                ', $arguments['uid']);
                 break;
 		}
 
