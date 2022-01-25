@@ -25,7 +25,7 @@ function my_repeat_function()
     $cronONOFF = getCronOnOff();
     if($cronONOFF == 1){
 
-        require_once('../public/post-creator.php');
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/post-creator.php';
         cron_job_task();
 
         $cronEmailONOFF = getCronEmailOnOff();
