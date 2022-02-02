@@ -63,7 +63,7 @@ function cron_job_task(){
         $createdAt = $positions->position->$i->createdAt;
 
 
-        // $content .= "<div class='id'>".$id."</div>";
+        // $content .= "<div class='id'>".$id."</div>";adsc
         // $content .= "<div class='subcompany'>".$subcompany."</div>";
         //$content .= "<div class='office'>".$office."</div>";
         //$content .= "<div class='department'>".$department."</div>";
