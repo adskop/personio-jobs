@@ -85,6 +85,57 @@ class Personio_Jobs_Public {
      * @param string $categorized
      */
     public function load_jobs($lang = 'en', $categorized = ''){
+        $hostname = get_option('personio-host');
+        $company = get_option('personio-company');
+        $categorized = get_option('personio-categorized');
+
+        if (is_ssl()) {
+            $d = 'https://';
+        } else {
+            $d = 'http://';
+        }
+
+
+        $path = $d . $hostname . '.jobs.personio.de/xml?language=' . $lang;
+        $positions = simplexml_load_file($path);
+
+
+
+        $i = 0;
+        foreach ($positions as $position) {
+            $content = '';
+            $id = $positions->position->$i->id;
+            $subcompany = $positions->position->$i->subcompany;
+            $office = $positions->position->$i->office;
+            $department = $positions->position->$i->department;
+            $recruitingCategory = $positions->position->$i->recruitingCategory;
+            $name = $positions->position->$i->name;
+            $employmentType = $positions->position->$i->employmentType;
+            $seniority = $positions->position->$i->seniority;
+            $schedule = $positions->position->$i->schedule;
+            $yearsOfExperience = $positions->position->$i->yearsOfExperience;
+            $keywords = $positions->position->$i->keywords;
+            $occupation = $positions->position->$i->occupation;
+            $occupationCategory = $positions->position->$i->occupationCategory;
+            $createdAt = $positions->position->$i->createdAt;
+
+
+
+
+            $i++;
+        }
+
+
+        $IDs = getWordPressIDs();
+
+        foreach ($IDs as $ID){
+            $title = getPostTitle($ID);
+            $url = getPostURL($ID);
+            echo '<div class=joblink><a href="'.$url.'">'.$title." Festanstellung, Vollzeit · Hürth".'</a></div> <br>';
+
+
+        }
+
 
      /*
         $translations = $this->get_translations();

@@ -1,12 +1,11 @@
 <?php
 function cron_job_task(){
     // Draw job postings from Personio API
-    require_once('class-personio-jobs-public.php');
-    $class_personio = new Personio_Jobs_Public($plugin_name, $version);
-
-    if($class_personio->is_wpml_active()) {
-        $lang = ICL_LANGUAGE_CODE; // Depending on implementation of multilingual content
-    }
+        include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+        // check for plugin using plugin name
+        if ( is_plugin_active( 'sitepress-multilingual-cms/sitepress.php' ) ) {
+            $lang = ICL_LANGUAGE_CODE; // Depending on implementation of multilingual content
+        }
 
     $hostname = get_option('personio-host');
     $company = get_option('personio-company');
@@ -37,7 +36,6 @@ function cron_job_task(){
             echo $arrayP2W[$i].",";
         }
     }
-
 
     $arrayXMLPersonio = array();
     $y = 0;
@@ -85,19 +83,8 @@ function cron_job_task(){
 
 
 
-        $content .= '<style>
-#personioApplicationForm{
-	display: none;
-}	
-</style>
-
-<script>
-jQuery(document).ready(function(){
-	jQuery("#Mybtn").click(function(){
-  		jQuery("#personioApplicationForm").toggle(500);
-  });
-    });
-</script>
+        $content .= '
+<script src="'.ABSPATH. 'wp-content/plugins/personio-jobs/public/form_toogle.js"></script>
 
 <button id="Mybtn" class="btn btn-primary">Jetzt bewerben!</button>
 <form id="personioApplicationForm" class="form-horizontal" method="POST" action="https://api.personio.de/recruiting/applicant" enctype="multipart/form-data">
@@ -113,7 +100,7 @@ jQuery(document).ready(function(){
 
         <!-- Pass company and position_id -->
         <input name="company_id" type="hidden" value="000">
-        <input name="job_position_id" type="hidden" value="000"
+        <input name="job_position_id" type="hidden" value="000">
 
         <!-- You can pass all applicant system attributes -->
         <div class="form-group">
@@ -164,43 +151,7 @@ jQuery(document).ready(function(){
     </fieldset>
 </form>';
 
-        $content .= '
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org/",
-  "@type": "JobPosting",
-  "title": "'.$name.'",
-  "description": "'.$keywords.'",
-  "identifier": {
-    "@type": "PropertyValue",
-    "name": "'.$subcompany.'",
-    "value": "'.$id.'"
-  },
-  "hiringOrganization" : {
-    "@type": "Organization",
-    "name": "'.$subcompany.'"
-  },
-  "employmentType": "'.$schedule.'",
-  "datePosted": " '.$createdAt.'",
-  "validThrough": "",
-  "jobLocation": {
-    "@type": "Place",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Hans-Böckler-Str. 163",
-      "addressLocality": "Hürth",
-      "postalCode": "50354",
-      "addressCountry": "DE"
-    }
-  },
-  "responsibilities": "",
-  "skills": "",
-  "qualifications": "",
-  "educationRequirements": "",
-  "experienceRequirements": "'.$yearsOfExperience.'"
-}
-</script>
-';
+
 
 
         if(in_array( $id,$arrayPersonioIDsinWordPress)){
@@ -215,6 +166,7 @@ jQuery(document).ready(function(){
                 );
 
                 wp_update_post( $update_post );
+                updateP2W($id,$subcompany,$office,$recruitingCategory,$employmentType,$schedule);
             }else{
                 //löschen
                 wp_delete_post(getWordPressID($id));
@@ -224,7 +176,7 @@ jQuery(document).ready(function(){
             //erstellen
             $post_id = postcreator($name,$content,'publish','442123924562346','page');
             //442123924562346 is the authors id to see in the database which page the plugin has generated
-            insertP2W($id,$post_id);
+            insertP2W($id,$post_id,$subcompany,$office,$recruitingCategory,$employmentType,$schedule);
         }
 
         $i++;

@@ -46,6 +46,28 @@ function getWordPressIDs()
     return $wordpressIDs;
 }
 
+function getPostTitle($ID)
+{
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'posts';
+    $result = $wpdb->get_results ("SELECT post_title FROM $table_name WHERE ID = $ID ");
+
+    $title = $result[0]->post_title;
+
+    return $title;
+}
+
+function getPostURL($ID)
+{
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'posts';
+    $result = $wpdb->get_results ("SELECT guid FROM $table_name WHERE ID = $ID ");
+
+    $url = $result[0]->guid;
+
+    return $url;
+}
+
 function getPostsIDs()
 {
     global $wpdb;
@@ -70,11 +92,22 @@ function getWordPressID($personioID)
     return $id;
 }
 
-function insertP2W($personioid,$post_id){
+function insertP2W($personioid,$post_id,$subcompany,$office,$recruitingCategory,$employmentType,$schedule){
     global $wpdb;
     $table_name = $wpdb->prefix . 'personio2wordpress';
 
     $sql = "INSERT INTO $table_name (personioid, wordpressid) VALUES ($personioid,$post_id)";
+    dbDelta( $sql );
+
+    $sql = "INSERT INTO $table_name (subcompany, office, recruitingCategory, employmentType, schedule) VALUES ($subcompany,$office,$recruitingCategory,$employmentType,$schedule)";
+    dbDelta( $sql );
+}
+
+function updateP2W($pid,$subcompany,$office,$recruitingCategory,$employmentType,$schedule){
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'personio2wordpress';
+
+    $sql = "UPDATE $table_name SET subcompany = $subcompany, office = $office, recruitingCategory = $recruitingCategory, employmentType = $employmentType, schedule = $schedule WHERE personioid = $pid";
     dbDelta( $sql );
 }
 

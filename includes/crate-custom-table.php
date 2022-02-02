@@ -10,6 +10,11 @@ function custom_create_db() {
  id INTEGER NOT NULL AUTO_INCREMENT,
  personioid  INTEGER NOT NULL,
  wordpressid INTEGER NOT NULL,
+ subcompany varchar(255) NOT NULL,
+ office varchar(255) NOT NULL,
+ recruitingCategory varchar(255) NOT NULL,
+ employmentType varchar(255) NOT NULL,
+ schedule varchar(255) NOT NULL,
  PRIMARY KEY (id)
  ) $charset_collate;";
     dbDelta( $sql );
