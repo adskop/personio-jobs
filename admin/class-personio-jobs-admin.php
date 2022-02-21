@@ -170,6 +170,17 @@ class Personio_Jobs_Admin {
             'supplemental' => 'in Kleinbuchstaben',
             'default' => ''
         ),
+        array(
+            'uid' => 'personio-filter',
+            'label' => 'Filter für Jobs',
+            'section' => 'our_first_section',
+            'type' => 'checkbox',
+            'options' => false,
+            'placeholder' => '',
+            'helper' => 'Bei Aktivierung wird nicht nach Art der Anstellung (Festanstellung etc.) gefiltert sondern nach Units',
+            'supplemental' => '',
+            'default' => ''
+        ),
 
         array(
             'uid' => 'personio-cron-on-off',

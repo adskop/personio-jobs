@@ -85,56 +85,327 @@ class Personio_Jobs_Public {
      * @param string $categorized
      */
     public function load_jobs($lang = 'en', $categorized = ''){
-        $hostname = get_option('personio-host');
-        $company = get_option('personio-company');
-        $categorized = get_option('personio-categorized');
-
-        if (is_ssl()) {
-            $d = 'https://';
-        } else {
-            $d = 'http://';
-        }
-
-
-        $path = $d . $hostname . '.jobs.personio.de/xml?language=' . $lang;
-        $positions = simplexml_load_file($path);
-
-
-
-        $i = 0;
-        foreach ($positions as $position) {
-            $content = '';
-            $id = $positions->position->$i->id;
-            $subcompany = $positions->position->$i->subcompany;
-            $office = $positions->position->$i->office;
-            $department = $positions->position->$i->department;
-            $recruitingCategory = $positions->position->$i->recruitingCategory;
-            $name = $positions->position->$i->name;
-            $employmentType = $positions->position->$i->employmentType;
-            $seniority = $positions->position->$i->seniority;
-            $schedule = $positions->position->$i->schedule;
-            $yearsOfExperience = $positions->position->$i->yearsOfExperience;
-            $keywords = $positions->position->$i->keywords;
-            $occupation = $positions->position->$i->occupation;
-            $occupationCategory = $positions->position->$i->occupationCategory;
-            $createdAt = $positions->position->$i->createdAt;
-
-
-
-
-            $i++;
-        }
-
-
         $IDs = getWordPressIDs();
+        $Research = array();
+        $Next = array();
+        $Connect = array();
+        $Nova = array();
+        $Elements = array();
+        $View = array();
+        $permanent = array();
+        $intern = array();
+        $work_stud = array();
+        $trainee = array();
+        $getFilter = get_option('personio-filter');
 
         foreach ($IDs as $ID){
             $title = getPostTitle($ID);
             $url = getPostURL($ID);
-            echo '<div class=joblink><a href="'.$url.'">'.$title." Festanstellung, Vollzeit · Hürth".'</a></div> <br>';
+            $joboffice = getOffice($ID);
+            $jobsubcompany = getSubcompany($ID);
+            $jobRC = getRecruitingCategory($ID);
+            $jobET = getEmploymentType($ID);
+            $jobSchedule = getSchedule($ID);
+
+            if($jobSchedule == 'full-time'){
+                $jobSchedule = 'Vollzeit';
+            }elseif($jobSchedule == 'part-time'){
+                $jobSchedule = 'Teilzeit';
+            }
+
+            if($jobET == 'permanent'){
+                $jobET = 'Festanstellung';
+            }elseif($jobET == 'intern'){
+                $jobET = 'Mitarbeitende im Praktikum / Studentenjob';
+            }elseif($jobET == 'working_student'){
+                $jobET = 'Werkstudierende';
+            }elseif($jobET == 'trainee'){
+                $jobET = 'Ausbildung/Trainee';
+            }
+
+
+
+            $link = '<div class=joblink><a href="'.$url.'">'.$title."<br><small> $jobET, $jobSchedule · $joboffice </small>".'</a></div>';
+
+            if ($getFilter == 1){
+                if($jobsubcompany == 'SKOPOS GmbH & Co. KG'){
+                    array_push($Research,$link );
+                }elseif($jobsubcompany == 'SKOPOS NEXT GmbH & Co. KG'){
+                    array_push($Next,$link );
+                }elseif($jobsubcompany == 'SKOPOS CONNECT GmbH'){
+                    array_push($Connect,$link );
+                }elseif($jobsubcompany == 'SKOPOS NOVA GmbH'){
+                    array_push($Nova,$link );
+                }elseif($jobsubcompany == 'SKOPOS ELEMENTS GmbH'){
+                    array_push($Elements,$link );
+                }elseif($jobsubcompany == 'SKOPOS VIEW GmbH & Co. KG'){
+                    array_push($View,$link );
+                }
+            }else{
+                if($jobET == 'Festanstellung'){
+                    array_push($permanent,$link );
+                }elseif($jobET == 'Mitarbeitende im Praktikum / Studentenjob'){
+                    array_push($intern,$link );
+                }elseif($jobET == 'Werkstudierende'){
+                    array_push($work_stud,$link );
+                }elseif($jobET == 'Ausbildung/Trainee'){
+                    array_push($trainee,$link );
+                }
+            }
 
 
         }
+
+        ?><script>
+jQuery(document).ready(function(){
+  jQuery("#Filter1").click(function(){
+    jQuery('div[id^="Job1"]').show(500);
+      jQuery('div[id^="Job2"]').hide(500);
+      jQuery('div[id^="Job3"]').hide(500);
+      jQuery('div[id^="Job4"]').hide(500);
+      jQuery('div[id^="Job5"]').hide(500);
+      jQuery('div[id^="Job6"]').hide(500);
+  });
+});
+</script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter2").click(function(){
+                    jQuery('div[id^="Job2"]').show(500);
+                    jQuery('div[id^="Job1"]').hide(500);
+                    jQuery('div[id^="Job3"]').hide(500);
+                    jQuery('div[id^="Job4"]').hide(500);
+                    jQuery('div[id^="Job5"]').hide(500);
+                    jQuery('div[id^="Job6"]').hide(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter3").click(function(){
+                    jQuery('div[id^="Job3"]').show(500);
+                    jQuery('div[id^="Job1"]').hide(500);
+                    jQuery('div[id^="Job2"]').hide(500);
+                    jQuery('div[id^="Job4"]').hide(500);
+                    jQuery('div[id^="Job5"]').hide(500);
+                    jQuery('div[id^="Job6"]').hide(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter4").click(function(){
+                    jQuery('div[id^="Job4"]').show(500);
+                    jQuery('div[id^="Job1"]').hide(500);
+                    jQuery('div[id^="Job2"]').hide(500);
+                    jQuery('div[id^="Job3"]').hide(500);
+                    jQuery('div[id^="Job5"]').hide(500);
+                    jQuery('div[id^="Job6"]').hide(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter5").click(function(){
+                    jQuery('div[id^="Job5"]').show(500);
+                    jQuery('div[id^="Job1"]').hide(500);
+                    jQuery('div[id^="Job2"]').hide(500);
+                    jQuery('div[id^="Job3"]').hide(500);
+                    jQuery('div[id^="Job4"]').hide(500);
+                    jQuery('div[id^="Job6"]').hide(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter6").click(function(){
+                    jQuery('div[id^="Job6"]').show(500);
+                    jQuery('div[id^="Job1"]').hide(500);
+                    jQuery('div[id^="Job2"]').hide(500);
+                    jQuery('div[id^="Job3"]').hide(500);
+                    jQuery('div[id^="Job4"]').hide(500);
+                    jQuery('div[id^="Job5"]').hide(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#all-filter").click(function(){
+                    jQuery('div[id^="Job6"]').show(500);
+                    jQuery('div[id^="Job1"]').show(500);
+                    jQuery('div[id^="Job2"]').show(500);
+                    jQuery('div[id^="Job3"]').show(500);
+                    jQuery('div[id^="Job4"]').show(500);
+                    jQuery('div[id^="Job5"]').show(500);
+                    jQuery('div[id^="Job7"]').show(500);
+                    jQuery('div[id^="Job8"]').show(500);
+                    jQuery('div[id^="Job9"]').show(500);
+                    jQuery('div[id^="Job10"]').show(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter7").click(function(){
+                    jQuery('div[id^="Job7"]').show(500);
+                    jQuery('div[id^="Job8"]').hide(500);
+                    jQuery('div[id^="Job9"]').hide(500);
+                    jQuery('div[id^="Job10"]').hide(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter8").click(function(){
+                    jQuery('div[id^="Job8"]').show(500);
+                    jQuery('div[id^="Job7"]').hide(500);
+                    jQuery('div[id^="Job9"]').hide(500);
+                    jQuery('div[id^="Job10"]').hide(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter9").click(function(){
+                    jQuery('div[id^="Job9"]').show(500);
+                    jQuery('div[id^="Job7"]').hide(500);
+                    jQuery('div[id^="Job8"]').hide(500);
+                    jQuery('div[id^="Job10"]').hide(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter10").click(function(){
+                    jQuery('div[id^="Job10"]').show(500);
+                    jQuery('div[id^="Job7"]').hide(500);
+                    jQuery('div[id^="Job8"]').hide(500);
+                    jQuery('div[id^="Job9"]').hide(500);
+                });
+            });
+        </script>
+
+
+<?php
+        echo '<button id="all-filter" class="btn btn-primary">Alle</button>';
+
+        if($getFilter == 1) {
+            echo '<button id="Filter1" class="btn btn-primary">SKOPOS GmbH & Co. KG</button>';
+            echo '<button id="Filter2" class="btn btn-primary">SKOPOS NEXT GmbH & Co. KG</button>';
+            echo '<button id="Filter3" class="btn btn-primary">SKOPOS CONNECT GmbH</button>';
+            echo '<button id="Filter4" class="btn btn-primary">SKOPOS NOVA GmbH</button>';
+            echo '<button id="Filter5" class="btn btn-primary">SKOPOS ELEMENTS GmbH</button>';
+            echo '<button id="Filter6" class="btn btn-primary">SKOPOS VIEW GmbH & Co. KG</button>';
+
+            echo '<div class="jobs-overview">';
+            if(empty($Research) == false){
+                echo '<div id="Job1" class="Job1">';
+                echo'<h4>SKOPOS GmbH & Co. KG</h4>';
+                foreach ($Research as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            if(empty($Next) == false){
+                echo '<div id ="Job2" class="Job2">';
+                echo'<h4>SKOPOS NEXT GmbH & Co. KG</h4>';
+                foreach ($Next as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            if(empty($Connect) == false){
+                echo '<div id ="Job3" class="Job3">';
+                echo'<h4>SKOPOS CONNECT GmbH</h4>';
+                foreach ($Connect as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            if(empty($Nova) == false){
+                echo '<div id ="Job4" class="Job4">';
+                echo'<h4>SKOPOS NOVA GmbH</h4>';
+                foreach ($Nova as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            if(empty($Elements) == false){
+                echo '<div id ="Job5" class="Job5">';
+                echo'<h4>SKOPOS ELEMENTS GmbH</h4>';
+                foreach ($Elements as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            if(empty($View) == false){
+                echo '<div id ="Job6" class="Job6">';
+                echo'<h4>SKOPOS VIEW GmbH & Co. KG</h4>';
+                foreach ($View as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            echo '</div>';
+
+        }else{
+            echo '<button id="Filter7" class="btn btn-primary">Ausbildung/Trainee</button>';
+            echo '<button id="Filter8" class="btn btn-primary">Festanstellung</button>';
+            echo '<button id="Filter9" class="btn btn-primary">Mitarbeitende im Praktikum / Studentenjob</button>';
+            echo '<button id="Filter10" class="btn btn-primary">Werkstudierende</button>';
+
+            echo '<div class="jobs-overview">';
+            if(empty($trainee) == false){
+                echo '<div id="Job7" class="Job7">';
+                echo'<h4>Ausbildung/Trainee</h4>';
+                foreach ($trainee as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            if(empty($permanent) == false){
+                echo '<div id ="Job8" class="Job8">';
+                echo'<h4>Festanstellung</h4>';
+                foreach ($permanent as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            if(empty($intern) == false){
+                echo '<div id ="Job9" class="Job9">';
+                echo'<h4>Mitarbeitende im Praktikum / Studentenjob</h4>';
+                foreach ($intern as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            if(empty($work_stud) == false){
+                echo '<div id ="Job10" class="Job11">';
+                echo'<h4>Werkstudierende</h4>';
+                foreach ($work_stud as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+
+            echo '</div>';
+
+
+
+        }
+
+
+
 
 
      /*

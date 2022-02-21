@@ -47,6 +47,8 @@ function cron_job_task(){
     $i = 0;
     foreach ($positions as $position) {
         $content = '';
+        $jobET = '';
+        $jobSchedule = '';
         $id = $positions->position->$i->id;
         $subcompany = $positions->position->$i->subcompany;
         $office = $positions->position->$i->office;
@@ -62,94 +64,122 @@ function cron_job_task(){
         $occupationCategory = $positions->position->$i->occupationCategory;
         $createdAt = $positions->position->$i->createdAt;
 
+        if($schedule == 'full-time'){
+            $jobSchedule = 'Vollzeit';
+        }elseif($schedule == 'part-time'){
+            $jobSchedule = 'Teilzeit';
+        }
 
-        // $content .= "<div class='id'>".$id."</div>";adsc
-        // $content .= "<div class='subcompany'>".$subcompany."</div>";
-        //$content .= "<div class='office'>".$office."</div>";
-        //$content .= "<div class='department'>".$department."</div>";
-        //$content .= "<div class='recruitingCategory'>".$recruitingCategory."</div>";
-        $content .= "<div class='name'>".$name."</div>";
+        if($employmentType == 'permanent'){
+            $jobET = 'Festanstellung';
+        }elseif($employmentType == 'intern'){
+            $jobET = 'Mitarbeitende im Praktikum / Studentenjob';
+        }elseif($employmentType == 'working_student'){
+            $jobET = 'Werkstudierende';
+        }elseif($employmentType == 'trainee'){
+            $jobET = 'Ausbildung/Trainee';
+        }
 
+        $path = "http://bob.sandbox.skoposweb.de/wp-content/plugins/personio-jobs/public/personio_job_pic1.png";
+        $content.= "<div id='hide' class='hide'>";
+        $jobtitle = "<H1 id='jobtitle'>".$name."</H1>";
+        $metadata = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                     <div class="meta-icons"><i class="fa-solid fa-location-dot"></i><span class="meta-text">&nbsp;'.$office.'&nbsp;</span><i class="fa-solid fa-briefcase"></i><span class="meta-text">&nbsp;'.$jobET.'&nbsp;</span><i class="fa-regular fa-clock"></i><span class="meta-text">&nbsp;'.$jobSchedule.'&nbsp;</span></div>';
+
+        $content .= '<div class="bildmitbildunterschrift">
+                        <img src="' . $path . '" alt="Titelbild">
+                        <span class="jobtitel">' . $jobtitle . '</span>
+                        <span class="metadata">' . $metadata . '</span>
+                        </div>';
 
         for($j = 0; $j < 5; $j++){
             $data1 = $positions->position->$i->jobDescriptions->jobDescription->$j->name;
             $data2 = $positions->position->$i->jobDescriptions->jobDescription->$j->value;
 
             $content .= "<div class='DescriptionName$j'>".strip_tags($data1)."</div>";
-            $content .= "<div class='DescriptionValue$j'>".strip_tags($data2)."</div>";
+            $content .= "<div class='DescriptionValue$j'>".$data2."</div>";
 
         }
 
 
+        $content .= '<script>jQuery(document).ready(function(){
+        jQuery("#Mybtn").click(function(){
+            jQuery("#personioApplicationForm").toggle(500);
+             jQuery(".hide").hide(500);
+        });
+    });
+</script>
 
-
-        $content .= '
-<script src="'.ABSPATH. 'wp-content/plugins/personio-jobs/public/form_toogle.js"></script>
+<style>
+#personioApplicationForm{
+	display: none;
+}	
+</style>
 
 <button id="Mybtn" class="btn btn-primary">Jetzt bewerben!</button>
+</div>
+
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+
 <form id="personioApplicationForm" class="form-horizontal" method="POST" action="https://api.personio.de/recruiting/applicant" enctype="multipart/form-data">
-    <fieldset>
-             <article class="detail-content-block detail-apply-form-description">
-        <h5 class="detail-block-title">Wir haben Dir gerade noch gefehlt? </h5>
-        <div class="detail-block-description">
-            Dann freuen wir uns über Deine Bewerbung - &nbsp;inklusive Gehaltsvorstellung und Eintrittstermin.<br><br>
-        </div>
-    </article>
-        <!-- Pass authentication token -->
-        <input name="access_token" type="hidden" value="a8056a2f81a8acd27a68">
 
-        <!-- Pass company and position_id -->
-        <input name="company_id" type="hidden" value="000">
-        <input name="job_position_id" type="hidden" value="000">
+  <label for="name">NAME:</label><br>
+      <input type="text" id="name" name="first_name" placeholder="Vorname" required><input type="text" id="name" name="last_name" placeholder="Nachname" required>
+        
+  <label for="email">EMAIL:</label><br>
+        <input type="text" id="email" name="email" placeholder="yourmail@domain.com" required>
+        
+  <label for="phone">TELEFON:</label><br>
+        <input type="text" id="phone" name="phone" placeholder="+49 176 123 4455" required>
+        
+  <label for="available_from">VERFÜGBAR AB</label><br>
+        <input type="text" id="available_from" name="available_from" placeholder="" required> 
+        
+   
+        
+        <input type="checkbox" id="privacy-policy-acceptance" name="privacy-policy-acceptance" required>
+<label for="privacy-policy-acceptance">Hiermit bestätige ich, dass ich die <a href="https://skopos.jobs.personio.de/privacy-policy?language=de">Datenschutzerklärung</a> zur Kenntnis genommen habe.*</label>
 
-        <!-- You can pass all applicant system attributes -->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="first_name">Name <sup>*</sup></label>
-            <div class="col-md-4">
-                <input id="first_name" name="first_name" type="text" placeholder="Vorname" class="form-control input-md" required="">
-                <input id="last_name" name="last_name" type="text" placeholder="Nachname" class="form-control input-md" style="margin-top: .5em" required="">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="email">E-Mail <sup>*</sup></label>
-            <div class="col-md-4">
-                <input id="email" name="email" type="text" placeholder="yourmail@domain.com" class="form-control input-md" required="">
-            </div>
-        </div>
-         <div class="form-group">
-            <label class="col-md-4 control-label" for="phone">Telefon</label>
-            <div class="col-md-4">
-                <input id="phone" name="phone" type="text" placeholder="+49 176 123 4455" class="form-control input-md" >
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="available_from">Verfügbar ab</label>
-            <div class="col-md-4">
-                <input id="available_from" name="available_from" type="text" placeholder="" class="form-control input-md">
-            </div>
-        </div>
-        <!-- Multiple documents up to 50MB can be passed -->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="documents">Bitte lade Deinen Lebenslauf, aktuelle Zeugnisse und ein kurzes Anschreiben hoch (insgesamt max. 50 MB). <sup>*</sup><br><span style="font-size: 0.8em">Du kannst mehrere Dokumente auf einmal auswählen</span></label>
-            <div class="col-md-4">
-                <input id="documents" name="documents[]" class="input-file" type="file" style="margin-top: 10px;" multiple="" required="">
-            </div>
-        </div>
-        <div class="form-group">
-        <input class="form-check-input" required="" type="checkbox" id="privacy-policy-acceptance" name="privacy-policy-acceptance">
-        <label class="form-check-label privacy-policy-statement-link" for="privacy-policy-acceptance">
-                    Hiermit bestätige ich, dass ich die <a href="https://skopos.jobs.personio.de/privacy-policy?language=de" target="_blank">Datenschutzerklärung</a> zur Kenntnis genommen habe.<span>*</span>
-                </label>
-        </div>
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="message">Ist alles ausgefüllt?</label>
-            <div class="col-md-4">
-                <input id="submitButton" type="submit" value="Bewerbung abschicken">
-            </div>
-        </div>
-
-    </fieldset>
 </form>';
+
+        $content .= '
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "JobPosting",
+  "title": "'.$name.'",
+  "description": "'.$keywords.'", 
+  "identifier": {
+    "@type": "PropertyValue",
+    "name": "'.$subcompany.'",
+    "value": "'.$id.'"
+  },
+  "hiringOrganization" : {
+    "@type": "Organization",
+    "name": "'.$subcompany.'"
+  },
+  "employmentType": "'.$schedule.'",
+  "datePosted": " '.$createdAt.'",
+  "validThrough": "",
+  "jobLocation": {
+    "@type": "Place",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Hans-Böckler-Str. 163",
+      "addressLocality": "Hürth",
+      "postalCode": "50354",
+      "addressCountry": "DE"
+    }
+  },
+  "responsibilities": "",
+  "skills": "",
+  "qualifications": "",
+  "educationRequirements": "",
+  "experienceRequirements": "'.$yearsOfExperience.'"
+}
+</script>
+';
 
 
 
@@ -164,8 +194,9 @@ function cron_job_task(){
                     'post_content' => $content,
                     'post_status' => 'publish',
                 );
-
+                kses_remove_filters(); //This Turns off kses
                 wp_update_post( $update_post );
+                kses_init_filters(); //This Turns on kses again
                 updateP2W($id,$subcompany,$office,$recruitingCategory,$employmentType,$schedule);
             }else{
                 //löschen
@@ -174,9 +205,12 @@ function cron_job_task(){
             }
         }else{
             //erstellen
+            kses_remove_filters(); //This Turns off kses
             $post_id = postcreator($name,$content,'publish','442123924562346','page');
+            kses_init_filters(); //This Turns on kses again
             //442123924562346 is the authors id to see in the database which page the plugin has generated
-            insertP2W($id,$post_id,$subcompany,$office,$recruitingCategory,$employmentType,$schedule);
+            insertP2W($id,$post_id);
+            updateP2W($id,$subcompany,$office,$recruitingCategory,$employmentType,$schedule);
         }
 
         $i++;
