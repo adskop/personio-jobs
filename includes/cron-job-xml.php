@@ -2,8 +2,8 @@
 require_once( ABSPATH . 'wp-content/plugins/personio-jobs/public/post-creator1.php' );
 // create a scheduled event (if it does not exist already)
 function cronstarter_activation() {
-    if( !wp_next_scheduled( 'mycronjob' ) ) {
-        wp_schedule_event( time(), 'personio_custom', 'mycronjob' );
+    if( !wp_next_scheduled( 'personio-cronjob' ) ) {
+        wp_schedule_event( time(), 'personio_custom', 'personio-cronjob' );
     }
 }
 // and make sure it's called whenever WordPress loads
@@ -12,15 +12,15 @@ add_action('wp', 'cronstarter_activation');
 // unschedule event upon plugin deactivation
 function cronstarter_deactivate() {
 // find out when the last event was scheduled
-    $timestamp = wp_next_scheduled ('mycronjob');
+    $timestamp = wp_next_scheduled ('personio-cronjob');
 // unschedule previous event if any
-    wp_unschedule_event ($timestamp, 'mycronjob');
+    wp_unschedule_event ($timestamp, 'personio-cronjob');
 }
 register_deactivation_hook (__FILE__, 'cronstarter_deactivate');
 
 // here's the function we'd like to call with our cron job
 // do here what needs to be done automatically as per your schedule
-function my_repeat_function()
+function repeat_function()
 {
     $cronONOFF = getCronOnOff();
     if($cronONOFF == 1){
@@ -52,7 +52,7 @@ function my_repeat_function()
 }
 }
 // hook that function onto our scheduled event:
-add_action ('mycronjob', 'my_repeat_function');
+add_action ('personio-cronjob', 'repeat_function');
 
 // add custom interval
 function cron_add_hour( $schedules ) {

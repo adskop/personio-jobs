@@ -6,7 +6,7 @@ function custom_create_db() {
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
     $table_name = $wpdb->prefix . 'personio2wordpress';
-    $sql = "CREATE TABLE $table_name (
+    $wpdb->query("CREATE TABLE $table_name (
  id INTEGER NOT NULL AUTO_INCREMENT,
  personioid  INTEGER NOT NULL,
  wordpressid INTEGER NOT NULL,
@@ -16,17 +16,15 @@ function custom_create_db() {
  employmentType varchar(255) NOT NULL,
  schedule varchar(255) NOT NULL,
  PRIMARY KEY (id)
- ) $charset_collate;";
-    dbDelta( $sql );
+ ) $charset_collate;");
+
 }
 
 
 function custom_delete_db() {
     global $wpdb;
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
     $table_name = $wpdb->prefix . 'personio2wordpress';
-    $sql = "DROP TABLE $table_name  ";
-    dbDelta( $sql );
+    $wpdb->query("DROP TABLE '$table_name'");
 }
 

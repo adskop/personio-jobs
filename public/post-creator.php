@@ -1,8 +1,7 @@
 <?php
 function cron_job_task(){
-    // Draw job postings from Personio API
+    $logcontent = "";
         include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-        // check for plugin using plugin name
         if ( is_plugin_active( 'sitepress-multilingual-cms/sitepress.php' ) ) {
             $lang = ICL_LANGUAGE_CODE; // Depending on implementation of multilingual content
         }
@@ -25,17 +24,6 @@ function cron_job_task(){
     $positions = simplexml_load_file($path);
 
     $arrayPersonioIDsinWordPress = getPersonioIDs();
-    $arrayPostsID = getPostsIDs();
-    $arrayP2W = getWordPressIDs();
-
-
-    for ($i=0; $i < count($arrayP2W); $i++)
-    {
-        if (!in_array("$arrayP2W[$i]",$arrayPostsID,true))
-        {
-            echo $arrayP2W[$i].",";
-        }
-    }
 
     $arrayXMLPersonio = array();
     $y = 0;
@@ -49,6 +37,9 @@ function cron_job_task(){
         $content = '';
         $jobET = '';
         $jobSchedule = '';
+        $jobRegion = '';
+        $jobPostalAddress = '';
+        $jobPostalCode = '';
         $id = $positions->position->$i->id;
         $subcompany = $positions->position->$i->subcompany;
         $office = $positions->position->$i->office;
@@ -64,6 +55,24 @@ function cron_job_task(){
         $occupationCategory = $positions->position->$i->occupationCategory;
         $createdAt = $positions->position->$i->createdAt;
 
+        if($office == "Hürth"){
+            $jobRegion = 'Nordrhein-Westfalen';
+            $jobPostalAddress = 'Hans-Böckler-Str. 163';
+            $jobPostalCode = ' 50354';
+        }elseif($office == "Aachen"){
+            $jobRegion = 'Nordrhein-Westfalen';
+            $jobPostalAddress = 'Oppenhoffallee 106';
+            $jobPostalCode = '52066';
+        }elseif($office == "München"){
+            $jobRegion = 'Bayern';
+            $jobPostalAddress = 'Kaufingerstraße 24';
+            $jobPostalCode = '80331';
+        }else{
+            $jobRegion = 'Nordrhein-Westfalen';
+            $jobPostalAddress = 'Hans-Böckler-Str. 163';
+            $jobPostalCode = ' 50354';
+        }
+
         if($schedule == 'full-time'){
             $jobSchedule = 'Vollzeit';
         }elseif($schedule == 'part-time'){
@@ -78,19 +87,26 @@ function cron_job_task(){
             $jobET = 'Werkstudierende';
         }elseif($employmentType == 'trainee'){
             $jobET = 'Ausbildung/Trainee';
+        }elseif($employmentType == 'temporary'){
+            $jobET = 'Befristet';
         }
 
-        $path = "http://bob.sandbox.skoposweb.de/wp-content/plugins/personio-jobs/public/personio_job_pic1.png";
+        $path = get_home_url()."/wp-content/plugins/personio-jobs/public/personio_job_pic1.png";
+
         $content.= "<div id='hide' class='hide'>";
         $jobtitle = "<H1 id='jobtitle'>".$name."</H1>";
         $metadata = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
                      <div class="meta-icons"><i class="fa-solid fa-location-dot"></i><span class="meta-text">&nbsp;'.$office.'&nbsp;</span><i class="fa-solid fa-briefcase"></i><span class="meta-text">&nbsp;'.$jobET.'&nbsp;</span><i class="fa-regular fa-clock"></i><span class="meta-text">&nbsp;'.$jobSchedule.'&nbsp;</span></div>';
 
+
         $content .= '<div class="bildmitbildunterschrift">
                         <img src="' . $path . '" alt="Titelbild">
                         <span class="jobtitel">' . $jobtitle . '</span>
                         <span class="metadata">' . $metadata . '</span>
-                        </div>';
+                        </div>
+                        <div id="scrollup"></div>';
+        $content.= "<div id='shownot' class='shownot'>";
+
 
         for($j = 0; $j < 5; $j++){
             $data1 = $positions->position->$i->jobDescriptions->jobDescription->$j->name;
@@ -104,47 +120,89 @@ function cron_job_task(){
 
         $content .= '<script>jQuery(document).ready(function(){
         jQuery("#Mybtn").click(function(){
-            jQuery("#personioApplicationForm").toggle(500);
-             jQuery(".hide").hide(500);
+            jQuery(".form").show(500);
+             jQuery(".shownot").hide(500);
+             jQuery("html, body").animate({
+scrollTop: jQuery("#scrollup").offset().top
+}, 1000);
+        });
+    });
+</script>
+
+<script>jQuery(document).ready(function(){
+        jQuery("#Mybtn1").click(function(){
+            jQuery(".form").hide(500);
+             jQuery(".shownot").show(500);  
+             jQuery("html, body").animate({
+scrollTop: jQuery("#hide").offset().top
+}, 1000);
         });
     });
 </script>
 
 <style>
-#personioApplicationForm{
+.form{
 	display: none;
 }	
 </style>
 
-<button id="Mybtn" class="btn btn-primary">Jetzt bewerben!</button>
+<button id="Mybtn">Jetzt bewerben!</button>
 </div>
+</div>
+<div id="form" class="form">
 
-<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+<h3 id="formheadline">Wir haben Dir gerade noch gefehlt?</h3>
+<p> Dann freuen wir uns über Deine Bewerbung - inklusive Eintrittstermin und Gehaltsvorstellung.</p>
 
 <form id="personioApplicationForm" class="form-horizontal" method="POST" action="https://api.personio.de/recruiting/applicant" enctype="multipart/form-data">
 
-  <label for="name">NAME:</label><br>
+        <input name="access_token" type="hidden" value="56eae2b614cc6d8d382a">
+
+  <label for="name">NAME:<sup>*</sup></label><br>
       <input type="text" id="name" name="first_name" placeholder="Vorname" required><input type="text" id="name" name="last_name" placeholder="Nachname" required>
+      
+      <input name="company_id" type="hidden" value="43207">
         
-  <label for="email">EMAIL:</label><br>
+  <label for="email">EMAIL:<sup>*</sup></label><br>
         <input type="text" id="email" name="email" placeholder="yourmail@domain.com" required>
         
-  <label for="phone">TELEFON:</label><br>
+        <input name="job_position_id" type="hidden" value="'.$id.'">
+        
+  <label for="phone">TELEFON:<sup>*</sup></label><br>
         <input type="text" id="phone" name="phone" placeholder="+49 176 123 4455" required>
+        
+        <input id="rcid" name="recruiting_channel_id" type="hidden" value="">
         
   <label for="available_from">VERFÜGBAR AB</label><br>
         <input type="text" id="available_from" name="available_from" placeholder="" required> 
         
-   
-        
-        <input type="checkbox" id="privacy-policy-acceptance" name="privacy-policy-acceptance" required>
-<label for="privacy-policy-acceptance">Hiermit bestätige ich, dass ich die <a href="https://skopos.jobs.personio.de/privacy-policy?language=de">Datenschutzerklärung</a> zur Kenntnis genommen habe.*</label>
+      <label for="documents">Lade dein Lebenslauf, Anschreiben, Arbeitszeugnisse oder andere Dokumente hoch. <sup>*</sup><br><span style="font-size: 0.8em">Du kannst mehrere auf einmal auswählen</span></label>
+          <input id="documents" name="documents[]" type="file" style="margin-top: 10px;" multiple="" required="">
+       
+        <label for="salary_expectations">GEHALTSWUNSCH</label><br>
+            <input type="text" id="salary_expectations" name="salary_expectations" placeholder="" required> 
 
-</form>';
+      <p><input type="checkbox" id="privacy-policy-acceptance" name="privacy-policy-acceptance" required>Hiermit bestätige ich, dass ich die <a href="https://skopos.jobs.personio.de/privacy-policy?language=de">Datenschutzerklärung</a> zur Kenntnis genommen habe.*</label></p>
+
+<input id="submitButton" type="submit" value="Bewerbung abschicken">
+
+</form>
+
+<button id="Mybtn1">Abbrechen</button>
+</div>
+';
+
+        $content.="<script>
+                    jQuery.urlParam = function(name){
+                        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                        return results[1] || 0;
+                        }
+                        var string = jQuery.urlParam('channelID');
+                        jQuery('#rcid').val(string);
+                    </script>";
 
         $content .= '
-<script type="application/ld+json">
+<script type="application/ld+json"> 
 {
   "@context": "https://schema.org/",
   "@type": "JobPosting",
@@ -152,7 +210,6 @@ function cron_job_task(){
   "description": "'.$keywords.'", 
   "identifier": {
     "@type": "PropertyValue",
-    "name": "'.$subcompany.'",
     "value": "'.$id.'"
   },
   "hiringOrganization" : {
@@ -166,27 +223,22 @@ function cron_job_task(){
     "@type": "Place",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Hans-Böckler-Str. 163",
-      "addressLocality": "Hürth",
-      "postalCode": "50354",
+      "streetAddress": "'.$jobPostalAddress.'",
+      "addressLocality": "'.$office.'",
+      "addressRegion":"'.$jobRegion.'",
+      "postalCode": "'.$jobPostalCode.'",
       "addressCountry": "DE"
     }
   },
-  "responsibilities": "",
-  "skills": "",
-  "qualifications": "",
-  "educationRequirements": "",
   "experienceRequirements": "'.$yearsOfExperience.'"
 }
 </script>
 ';
-
-
-
-
+        $logcontent .= "---------".$i."--------- \n";
+        $logcontent .= date("d/m/Y H:i:s")." - ".$id." - ".$name." goes into IF or ELSE section \n";
         if(in_array( $id,$arrayPersonioIDsinWordPress)){
             if(in_array($id, $arrayXMLPersonio)){
-                //update
+                $logcontent .= date("d/m/Y H:i:s")." - ".$id." - ".$name." was updated \n";
                 $update_post = array(
                     'ID'           => getWordPressID($id),
                     'post_author'  => '442123924562346',
@@ -198,13 +250,9 @@ function cron_job_task(){
                 wp_update_post( $update_post );
                 kses_init_filters(); //This Turns on kses again
                 updateP2W($id,$subcompany,$office,$recruitingCategory,$employmentType,$schedule);
-            }else{
-                //löschen
-                wp_delete_post(getWordPressID($id));
-                deleteP2W($id,getWordPressID($id));
             }
         }else{
-            //erstellen
+            $logcontent .= date("d/m/Y H:i:s")." - ".$id." - ".$name." was created \n";
             kses_remove_filters(); //This Turns off kses
             $post_id = postcreator($name,$content,'publish','442123924562346','page');
             kses_init_filters(); //This Turns on kses again
@@ -212,8 +260,19 @@ function cron_job_task(){
             insertP2W($id,$post_id);
             updateP2W($id,$subcompany,$office,$recruitingCategory,$employmentType,$schedule);
         }
-
+        $logcontent .="\n";
         $i++;
     }
+    foreach ($arrayPersonioIDsinWordPress as $id){
+        $wid = getWordPressID($id);
+        $postname = getPostTitle($wid);
+        if(!in_array($id,$arrayXMLPersonio)){
+            $logcontent .= date("d/m/Y H:i:s")." - ".$id." - ".$postname." was deleted \n";
+            wp_delete_post(getWordPressID($id));
+            deleteP2W($id);
+        }
+    }
+
+    mail("bob.limbach@skopos.de","LOG-TEXT",$logcontent);
 }
 ?>

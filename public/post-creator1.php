@@ -92,6 +92,17 @@ function getWordPressID($personioID)
     return $id;
 }
 
+function getPersonioID($wordpressID)
+{
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'personio2wordpress';
+    $result = $wpdb->get_results ("SELECT personioid FROM $table_name WHERE wordpressid = $wordpressID");
+
+    $id = $result[0]->personioid;
+
+    return $id;
+}
+
 function getSubcompany($wordpressID)
 {
     global $wpdb;
@@ -150,26 +161,20 @@ function getSchedule ($wordpressID)
 function insertP2W($personioid,$post_id){
     global $wpdb;
     $table_name = $wpdb->prefix . 'personio2wordpress';
-
-    $sql = "INSERT INTO $table_name (personioid, wordpressid) VALUES ($personioid,$post_id)";
-    dbDelta( $sql );
+    $wpdb->get_results("INSERT INTO $table_name (personioid, wordpressid) VALUES ($personioid,$post_id)");
 }
 
 function updateP2W($id,$subcompany,$office,$recruitingCategory,$employmentType,$schedule){
     global $wpdb;
     $table_name = $wpdb->prefix . 'personio2wordpress';
-
-    $sql = "UPDATE $table_name SET subcompany = '$subcompany', office = '$office', recruitingCategory  = '$recruitingCategory', employmentType = '$employmentType', schedule = '$schedule' WHERE personioid = $id";
-    dbDelta( $sql );
+    $wpdb->get_results("UPDATE $table_name SET subcompany = '$subcompany', office = '$office', recruitingCategory  = '$recruitingCategory', employmentType = '$employmentType', schedule = '$schedule' WHERE personioid = $id");
 }
 
 
-function deleteP2W($personioid,$wordpressid){
+function deleteP2W($personioid){
     global $wpdb;
     $table_name = $wpdb->prefix . 'personio2wordpress';
-
-    $sql = "DELETE FROM $table_name WHERE personioid = $personioid AND wordpressid = $wordpressid";
-    dbDelta( $sql );
+    $wpdb->get_results("DELETE FROM $table_name WHERE personioid = '$personioid'");
 }
 
 function getCronOnOff()

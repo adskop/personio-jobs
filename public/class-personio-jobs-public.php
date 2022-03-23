@@ -1,25 +1,4 @@
 <?php
-
-/**
- * The public-facing functionality of the plugin.
- *
- * @link hkvlaanderen.nl
- * @since 1.0.0
- *
- * @package Personio_Jobs
- * @subpackage Personio_Jobs/public
- */
-
-/**
- * The public-facing functionality of the plugin.
- *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the public-facing stylesheet and JavaScript.
- *
- * @package Personio_Jobs
- * @subpackage Personio_Jobs/public
- * @author Hendrik Vlaanderen <h.k.vlaanderen@gmail.com>
- */
 class Personio_Jobs_Public {
 
     private $plugin_name;
@@ -80,11 +59,7 @@ class Personio_Jobs_Public {
         return $_result;
     }
 
-    /**
-     * @param string $lang
-     * @param string $categorized
-     */
-    public function load_jobs($lang = 'en', $categorized = ''){
+    public function load_jobs(){
         $IDs = getWordPressIDs();
         $Research = array();
         $Next = array();
@@ -96,6 +71,7 @@ class Personio_Jobs_Public {
         $intern = array();
         $work_stud = array();
         $trainee = array();
+        $temporary = array();
         $getFilter = get_option('personio-filter');
 
         foreach ($IDs as $ID){
@@ -121,9 +97,9 @@ class Personio_Jobs_Public {
                 $jobET = 'Werkstudierende';
             }elseif($jobET == 'trainee'){
                 $jobET = 'Ausbildung/Trainee';
+            }elseif($jobET == 'temporary'){
+                $jobET = 'Befristet';
             }
-
-
 
             $link = '<div class=joblink><a href="'.$url.'">'.$title."<br><small> $jobET, $jobSchedule · $joboffice </small>".'</a></div>';
 
@@ -150,6 +126,8 @@ class Personio_Jobs_Public {
                     array_push($work_stud,$link );
                 }elseif($jobET == 'Ausbildung/Trainee'){
                     array_push($trainee,$link );
+                }elseif($jobET == 'Befristet'){
+                    array_push($temporary,$link );
                 }
             }
 
@@ -247,6 +225,7 @@ jQuery(document).ready(function(){
                     jQuery('div[id^="Job8"]').show(500);
                     jQuery('div[id^="Job9"]').show(500);
                     jQuery('div[id^="Job10"]').show(500);
+                    jQuery('div[id^="Job11"]').show(500);
                 });
             });
         </script>
@@ -258,6 +237,7 @@ jQuery(document).ready(function(){
                     jQuery('div[id^="Job8"]').hide(500);
                     jQuery('div[id^="Job9"]').hide(500);
                     jQuery('div[id^="Job10"]').hide(500);
+                    jQuery('div[id^="Job11"]').hide(500);
                 });
             });
         </script>
@@ -269,6 +249,7 @@ jQuery(document).ready(function(){
                     jQuery('div[id^="Job7"]').hide(500);
                     jQuery('div[id^="Job9"]').hide(500);
                     jQuery('div[id^="Job10"]').hide(500);
+                    jQuery('div[id^="Job11"]').hide(500);
                 });
             });
         </script>
@@ -280,6 +261,7 @@ jQuery(document).ready(function(){
                     jQuery('div[id^="Job7"]').hide(500);
                     jQuery('div[id^="Job8"]').hide(500);
                     jQuery('div[id^="Job10"]').hide(500);
+                    jQuery('div[id^="Job11"]').hide(500);
                 });
             });
         </script>
@@ -291,6 +273,19 @@ jQuery(document).ready(function(){
                     jQuery('div[id^="Job7"]').hide(500);
                     jQuery('div[id^="Job8"]').hide(500);
                     jQuery('div[id^="Job9"]').hide(500);
+                    jQuery('div[id^="Job11"]').hide(500);
+                });
+            });
+        </script>
+
+        <script>
+            jQuery(document).ready(function(){
+                jQuery("#Filter11").click(function(){
+                    jQuery('div[id^="Job11"]').show(500);
+                    jQuery('div[id^="Job7"]').hide(500);
+                    jQuery('div[id^="Job8"]').hide(500);
+                    jQuery('div[id^="Job9"]').hide(500);
+                    jQuery('div[id^="Job10"]').hide(500);
                 });
             });
         </script>
@@ -360,6 +355,7 @@ jQuery(document).ready(function(){
 
         }else{
             echo '<button id="Filter7" class="btn btn-primary">Ausbildung/Trainee</button>';
+            echo '<button id="Filter11" class="btn btn-primary">Befristet</button>';
             echo '<button id="Filter8" class="btn btn-primary">Festanstellung</button>';
             echo '<button id="Filter9" class="btn btn-primary">Mitarbeitende im Praktikum / Studentenjob</button>';
             echo '<button id="Filter10" class="btn btn-primary">Werkstudierende</button>';
@@ -369,6 +365,14 @@ jQuery(document).ready(function(){
                 echo '<div id="Job7" class="Job7">';
                 echo'<h4>Ausbildung/Trainee</h4>';
                 foreach ($trainee as $Job){
+                    echo $Job;
+                }
+                echo '</div>';
+            }
+            if(empty($temporary) == false){
+                echo '<div id="Job11" class="Job11">';
+                echo'<h4>Befristet</h4>';
+                foreach ($temporary as $Job){
                     echo $Job;
                 }
                 echo '</div>';
