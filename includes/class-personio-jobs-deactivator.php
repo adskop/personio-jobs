@@ -10,5 +10,6 @@ class Personio_Jobs_Deactivator {
 
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/crate-custom-table.php';
         custom_delete_db();
+        delete_plugin_posts();
     }
 }

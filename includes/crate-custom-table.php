@@ -15,16 +15,20 @@ function custom_create_db() {
  recruitingCategory varchar(255) NOT NULL,
  employmentType varchar(255) NOT NULL,
  schedule varchar(255) NOT NULL,
- PRIMARY KEY (id)
- ) $charset_collate;");
+ PRIMARY KEY (id)) $charset_collate;");
 
 }
-
 
 function custom_delete_db() {
     global $wpdb;
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     $table_name = $wpdb->prefix . 'personio2wordpress';
-    $wpdb->query("DROP TABLE '$table_name'");
+    $wpdb->query("DROP TABLE $table_name");
 }
 
+function delete_plugin_posts() {
+    global $wpdb;
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    $table_name = $wpdb->prefix . 'posts';
+    $wpdb->query("DELETE FROM $table_name WHERE post_author = 442123924562346");
+}

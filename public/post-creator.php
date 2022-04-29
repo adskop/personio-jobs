@@ -117,6 +117,14 @@ function cron_job_task(){
 
         }
 
+        $redirectID = getWordPressID($id);
+        if($redirectID != null){
+            $redirectURL = getPostURL($redirectID);
+        }else{
+            $redirectURL = home_url();
+        }
+
+
 
         $content .= '<script>jQuery(document).ready(function(){
         jQuery("#Mybtn").click(function(){
@@ -140,6 +148,13 @@ scrollTop: jQuery("#hide").offset().top
     });
 </script>
 
+<script type="text/javascript">
+function redirect()
+{
+    window.location.href="'.$redirectURL.'";
+}
+</script>
+
 <style>
 .form{
 	display: none;
@@ -158,12 +173,12 @@ scrollTop: jQuery("#hide").offset().top
 
         <input name="access_token" type="hidden" value="56eae2b614cc6d8d382a">
 
-  <label for="name">NAME:<sup>*</sup></label><br>
-      <input type="text" id="name" name="first_name" placeholder="Vorname" required><input type="text" id="name" name="last_name" placeholder="Nachname" required>
+  <label for="vorname">NAME:<sup>*</sup></label><br>
+      <input type="text" id="vorname" name="first_name" placeholder="Vorname" required><input type="text" id="nachname" name="last_name" placeholder="Nachname" required>
       
       <input name="company_id" type="hidden" value="43207">
         
-  <label for="email">EMAIL:<sup>*</sup></label><br>
+  <label for="email">E-MAIL:<sup>*</sup></label><br>
         <input type="text" id="email" name="email" placeholder="yourmail@domain.com" required>
         
         <input name="job_position_id" type="hidden" value="'.$id.'">
@@ -176,15 +191,22 @@ scrollTop: jQuery("#hide").offset().top
   <label for="available_from">VERFÜGBAR AB</label><br>
         <input type="text" id="available_from" name="available_from" placeholder="" required> 
         
-      <label for="documents">Lade dein Lebenslauf, Anschreiben, Arbeitszeugnisse oder andere Dokumente hoch. <sup>*</sup><br><span style="font-size: 0.8em">Du kannst mehrere auf einmal auswählen</span></label>
+      <label for="documents">Lade dein Lebenslauf, Anschreiben, Arbeitszeugnisse oder andere Dokumente hoch. <sup>*</sup><br><span>Du kannst mehrere Dateien auf einmal auswählen.</span></label>
           <input id="documents" name="documents[]" type="file" style="margin-top: 10px;" multiple="" required="">
        
-        <label for="salary_expectations">GEHALTSWUNSCH</label><br>
-            <input type="text" id="salary_expectations" name="salary_expectations" placeholder="" required> 
+    ';
 
+        if($employmentType == 'permanent' || $employmentType == 'temporary'){
+
+        $content .= '
+       <label for="salary_expectations">GEHALTSWUNSCH</label><br>
+            <input type="text" id="salary_expectations" name="salary_expectations" placeholder="" required> 
+            ';
+        }
+$content .= '
       <p><input type="checkbox" id="privacy-policy-acceptance" name="privacy-policy-acceptance" required>Hiermit bestätige ich, dass ich die <a href="https://skopos.jobs.personio.de/privacy-policy?language=de">Datenschutzerklärung</a> zur Kenntnis genommen habe.*</label></p>
 
-<input id="submitButton" type="submit" value="Bewerbung abschicken">
+<input id="submitButton" type="submit" value="Bewerbung abschicken" onclick="redirect();">
 
 </form>
 
@@ -273,6 +295,6 @@ scrollTop: jQuery("#hide").offset().top
         }
     }
 
-    mail("bob.limbach@skopos.de","LOG-TEXT",$logcontent);
+    //mail("bob.limbach@skopos.de","LOG-TEXT",$logcontent);
 }
 ?>
