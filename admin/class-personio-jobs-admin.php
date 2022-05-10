@@ -226,6 +226,17 @@ class Personio_Jobs_Admin {
             'supplemental' => '',
             'default' => ''
         ),
+        array(
+            'uid' => 'personio-career-page',
+            'label' => 'Karriere Seite',
+            'section' => 'our_second_section',
+            'type' => 'text',
+            'options' => false,
+            'placeholder' => 'www.domain.com/career',
+            'helper' => 'Verlinkung der Karriere Seite für den Zurück-Knopf',
+            'supplemental' => '',
+            'default' => ''
+        ),
     );
 
     foreach( $fields as $field ){

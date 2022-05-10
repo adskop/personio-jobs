@@ -92,7 +92,7 @@ class Personio_Jobs_Public {
             if($jobET == 'permanent'){
                 $jobET = 'Festanstellung';
             }elseif($jobET == 'intern'){
-                $jobET = 'Mitarbeitende im Praktikum / Studentenjob';
+                $jobET = 'Praktikum/Studentenjob';
             }elseif($jobET == 'working_student'){
                 $jobET = 'Werkstudierende';
             }elseif($jobET == 'trainee'){
@@ -120,7 +120,7 @@ class Personio_Jobs_Public {
             }else{
                 if($jobET == 'Festanstellung'){
                     array_push($permanent,$link );
-                }elseif($jobET == 'Mitarbeitende im Praktikum / Studentenjob'){
+                }elseif($jobET == 'Praktikum/Studentenjob'){
                     array_push($intern,$link );
                 }elseif($jobET == 'Werkstudierende'){
                     array_push($work_stud,$link );
@@ -134,7 +134,9 @@ class Personio_Jobs_Public {
 
         }
 
-        ?><script>
+        ?>
+        <div id="career-jobs"></div>
+        <script>
 jQuery(document).ready(function(){
   jQuery("#Filter1").click(function(){
     jQuery('div[id^="Job1"]').show(500);
@@ -357,7 +359,7 @@ jQuery(document).ready(function(){
             echo '<button id="Filter7" class="btn btn-primary">Ausbildung/Trainee</button>';
             echo '<button id="Filter11" class="btn btn-primary">Befristet</button>';
             echo '<button id="Filter8" class="btn btn-primary">Festanstellung</button>';
-            echo '<button id="Filter9" class="btn btn-primary">Mitarbeitende im Praktikum / Studentenjob</button>';
+            echo '<button id="Filter9" class="btn btn-primary">Praktikum/Studentenjob</button>';
             echo '<button id="Filter10" class="btn btn-primary">Werkstudierende</button>';
 
             echo '<div class="jobs-overview">';
@@ -387,7 +389,7 @@ jQuery(document).ready(function(){
             }
             if(empty($intern) == false){
                 echo '<div id ="Job9" class="Job9">';
-                echo'<h4>Mitarbeitende im Praktikum / Studentenjob</h4>';
+                echo'<h4>Praktikum/Studentenjob</h4>';
                 foreach ($intern as $Job){
                     echo $Job;
                 }

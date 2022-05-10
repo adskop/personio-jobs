@@ -82,7 +82,7 @@ function cron_job_task(){
         if($employmentType == 'permanent'){
             $jobET = 'Festanstellung';
         }elseif($employmentType == 'intern'){
-            $jobET = 'Mitarbeitende im Praktikum / Studentenjob';
+            $jobET = 'Praktikum/Studentenjob';
         }elseif($employmentType == 'working_student'){
             $jobET = 'Werkstudierende';
         }elseif($employmentType == 'trainee'){
@@ -92,6 +92,7 @@ function cron_job_task(){
         }
 
         $path = get_home_url()."/wp-content/plugins/personio-jobs/public/personio_job_pic1.png";
+        $careerpage = get_option('personio-career-page');
 
         $content.= "<div id='hide' class='hide'>";
         $jobtitle = "<H1 id='jobtitle'>".$name."</H1>";
@@ -103,6 +104,7 @@ function cron_job_task(){
                         <img src="' . $path . '" alt="Titelbild">
                         <span class="jobtitel">' . $jobtitle . '</span>
                         <span class="metadata">' . $metadata . '</span>
+                        <div class="meta-icons" id="career-site "><a href="' . $careerpage . '"><i class="fa-solid fa-angle-left"></i> Alle Stellen anzeigen</a></div>
                         </div>
                         <div id="scrollup"></div>';
         $content.= "<div id='shownot' class='shownot'>";
