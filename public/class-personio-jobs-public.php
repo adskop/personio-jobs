@@ -73,6 +73,7 @@ class Personio_Jobs_Public {
         $trainee = array();
         $temporary = array();
         $getFilter = get_option('personio-filter');
+        $j = 1;
 
         foreach ($IDs as $ID){
             $title = getPostTitle($ID);
@@ -82,6 +83,7 @@ class Personio_Jobs_Public {
             $jobRC = getRecruitingCategory($ID);
             $jobET = getEmploymentType($ID);
             $jobSchedule = getSchedule($ID);
+
 
             if($jobSchedule == 'full-time'){
                 $jobSchedule = 'Vollzeit';
@@ -101,7 +103,8 @@ class Personio_Jobs_Public {
                 $jobET = 'Befristet';
             }
 
-            $link = '<div class=joblink><a href="'.$url.'">'.$title."<br><small> $jobET, $jobSchedule · $joboffice </small>".'</a></div>';
+            $link = '<div class=joblink id="joblink'.$j.'"><a href="'.$url.'">'.$title."<br><small> $jobET, $jobSchedule · $joboffice </small>".'</a></div>';
+            $j++;
 
             if ($getFilter == 1){
                 if($jobsubcompany == 'SKOPOS GmbH & Co. KG'){
@@ -292,6 +295,59 @@ jQuery(document).ready(function(){
             });
         </script>
 
+        <script>
+            function searchColumn() {
+                var input, filter, div, td, i, j, txtValue, length, parent, child, head, amount, childdivid, y, q, z, check;
+                input = document.getElementById("searchInput");
+                filter = input.value.toUpperCase();
+                parent = document.getElementById('jobs-overview');
+                child = parent.getElementsByTagName('div').length;
+                length = child - 5;
+
+                //console.log(length);
+                for (i = 1; i < length; i++) {
+                    div = document.getElementById("joblink" + i);
+                    //console.log(div);
+                    td = div.getElementsByTagName("a");
+                    if (td) {
+                        txtValue = td[0].innerText;
+                        //console.log(txtValue);
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            div.style.display = "";
+                        } else {
+                            div.style.display = "none";
+                        }
+                        for (j = 1; j < 7; j++) {
+                            head = document.getElementById("Job"+j);
+                            amount = head.children.length
+                            q = 33;
+                            z = 33;
+                            for (y = 1; y < amount; y++) {
+                                childdivid = head.children[y].id;
+                                check = document.getElementById(childdivid);
+                                if(window.getComputedStyle(check).display === "none"){
+                                    q = 0;
+                                }else{
+                                    z = 0;
+                                }
+                            }
+                            if(z == 33 && q == 0 ){
+                                head.style.display = "none";
+                            }else{
+                                head.style.display = "";
+                            }
+                        }
+                    }
+                }
+            }
+        </script>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+        <div class="search-wrapper">
+			<i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Stellen durchsuchen" onkeyup="searchColumn()">
+        </div>
 
 <?php
         echo '<button id="all-filter" class="btn btn-primary">Alle</button>';
@@ -304,7 +360,7 @@ jQuery(document).ready(function(){
             echo '<button id="Filter5" class="btn btn-primary">SKOPOS ELEMENTS GmbH</button>';
             echo '<button id="Filter6" class="btn btn-primary">SKOPOS VIEW GmbH & Co. KG</button>';
 
-            echo '<div class="jobs-overview">';
+            echo '<div id="jobs-overview" class="jobs-overview">';
             if(empty($Research) == false){
                 echo '<div id="Job1" class="Job1">';
                 echo'<h4>SKOPOS GmbH & Co. KG</h4>';
@@ -362,7 +418,7 @@ jQuery(document).ready(function(){
             echo '<button id="Filter9" class="btn btn-primary">Praktikum/Studentenjob</button>';
             echo '<button id="Filter10" class="btn btn-primary">Werkstudierende</button>';
 
-            echo '<div class="jobs-overview">';
+            echo '<div id="jobs-overview" class="jobs-overview">';
             if(empty($trainee) == false){
                 echo '<div id="Job7" class="Job7">';
                 echo'<h4>Ausbildung/Trainee</h4>';

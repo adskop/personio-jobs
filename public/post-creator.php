@@ -100,13 +100,20 @@ function cron_job_task(){
                      <div class="meta-icons"><i class="fa-solid fa-location-dot"></i><span class="meta-text">&nbsp;'.$office.'&nbsp;</span><i class="fa-solid fa-briefcase"></i><span class="meta-text">&nbsp;'.$jobET.'&nbsp;</span><i class="fa-regular fa-clock"></i><span class="meta-text">&nbsp;'.$jobSchedule.'&nbsp;</span></div>';
 
 
-        $content .= '<div class="bildmitbildunterschrift">
+        $content .= '<style>
+
+</style>
+
+                        <div class="bildmitbildunterschrift">
                         <img src="' . $path . '" alt="Titelbild">
                         <span class="jobtitel">' . $jobtitle . '</span>
                         <span class="metadata">' . $metadata . '</span>
-                        <div class="meta-icons" id="career-site "><a href="' . $careerpage . '"><i class="fa-solid fa-angle-left"></i> Alle Stellen anzeigen</a></div>
                         </div>
+						 <form id="backform" action="'.$careerpage.'">
+        <button id="backbutton" type="submit"><i class="fa-solid fa-angle-left"></i> Alle Stellen anzeigen</button>
+            </form>
                         <div id="scrollup"></div>';
+
         $content.= "<div id='shownot' class='shownot'>";
 
 
