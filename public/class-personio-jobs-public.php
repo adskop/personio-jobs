@@ -103,7 +103,7 @@ class Personio_Jobs_Public {
                 $jobET = 'Befristet';
             }
 
-            $link = '<div class=joblink id="joblink'.$j.'"><a href="'.$url.'">'.$title."<br><small> $jobET, $jobSchedule · $joboffice </small>".'</a></div>';
+            $link = '<div class=joblink id="joblink'.$j.'"><a href="'.$url.'" target="_blank">'.$title."<br><small> $jobET, $jobSchedule · $joboffice </small>".'</a></div>';
             $j++;
 
             if ($getFilter == 1){

@@ -92,27 +92,34 @@ function cron_job_task(){
         }
 
         $path = get_home_url()."/wp-content/plugins/personio-jobs/public/personio_job_pic1.png";
+        $path1 = get_home_url()."/wp-content/plugins/personio-jobs/public/bifi.js";
         $careerpage = get_option('personio-career-page');
 
         $content.= "<div id='hide' class='hide'>";
         $jobtitle = "<H1 id='jobtitle'>".$name."</H1>";
         $metadata = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-                     <div class="meta-icons"><i class="fa-solid fa-location-dot"></i><span class="meta-text">&nbsp;'.$office.'&nbsp;</span><i class="fa-solid fa-briefcase"></i><span class="meta-text">&nbsp;'.$jobET.'&nbsp;</span><i class="fa-regular fa-clock"></i><span class="meta-text">&nbsp;'.$jobSchedule.'&nbsp;</span></div>';
+
+                     <div class="meta-icons">
+                     <i class="fa-solid fa-location-dot"></i><span class="meta-text">&nbsp;'.$office.'&nbsp;</span>
+                     <i class="fa-solid fa-briefcase"></i><span class="meta-text">&nbsp;'.$jobET.'&nbsp;</span>
+                     <i class="fa-regular fa-clock"></i><span class="meta-text">&nbsp;'.$jobSchedule.'&nbsp;</span>
+                     </div>';
 
 
-        $content .= '<style>
-
-</style>
-
+        $content .= '
+                        <script src="' . $path1 . '"></script>
                         <div class="bildmitbildunterschrift">
                         <img src="' . $path . '" alt="Titelbild">
                         <span class="jobtitel">' . $jobtitle . '</span>
                         <span class="metadata">' . $metadata . '</span>
                         </div>
-						 <form id="backform" action="'.$careerpage.'">
-        <button id="backbutton" type="submit"><i class="fa-solid fa-angle-left"></i> Alle Stellen anzeigen</button>
-            </form>
-                        <div id="scrollup"></div>';
+                        <div id="scrollup"></div>
+                        
+						<form id="backform" action="'.$careerpage.'">
+                        <button id="backbutton" type="submit"><i class="fa-solid fa-angle-left"></i> Alle Stellen anzeigen</button>
+                        </form>
+                        
+                      ';
 
         $content.= "<div id='shownot' class='shownot'>";
 
@@ -132,8 +139,6 @@ function cron_job_task(){
         }else{
             $redirectURL = home_url();
         }
-
-
 
         $content .= '<script>jQuery(document).ready(function(){
         jQuery("#Mybtn").click(function(){
@@ -182,17 +187,17 @@ function redirect()
 
         <input name="access_token" type="hidden" value="56eae2b614cc6d8d382a">
 
-  <label for="vorname">NAME:<sup>*</sup></label><br>
+  <label for="vorname">NAME:<sup>&#128953;</sup></label><br>
       <input type="text" id="vorname" name="first_name" placeholder="Vorname" required><input type="text" id="nachname" name="last_name" placeholder="Nachname" required>
       
       <input name="company_id" type="hidden" value="43207">
         
-  <label for="email">E-MAIL:<sup>*</sup></label><br>
+  <label for="email">E-MAIL:<sup>&#128953;</sup></label><br>
         <input type="text" id="email" name="email" placeholder="yourmail@domain.com" required>
         
         <input name="job_position_id" type="hidden" value="'.$id.'">
         
-  <label for="phone">TELEFON:<sup>*</sup></label><br>
+  <label for="phone">TELEFON:<sup>&#128953;</sup></label><br>
         <input type="text" id="phone" name="phone" placeholder="+49 176 123 4455" required>
         
         <input id="rcid" name="recruiting_channel_id" type="hidden" value="">
@@ -200,9 +205,17 @@ function redirect()
   <label for="available_from">VERFÜGBAR AB</label><br>
         <input type="text" id="available_from" name="available_from" placeholder="" required> 
         
-      <label for="documents">Lade dein Lebenslauf, Anschreiben, Arbeitszeugnisse oder andere Dokumente hoch. <sup>*</sup><br><span>Du kannst mehrere Dateien auf einmal auswählen.</span></label>
-          <input id="documents" name="documents[]" type="file" style="margin-top: 10px;" multiple="" required="">
+      <label for="cv">Lade dein Lebenslauf hoch. <sup>&#128953;</sup></label>
+          <input class="bfi" id="cv" name="documents[]" type="file" style="margin-top: 10px;" required="">
+         
+        <label for="coverletter">Lade dein Anschreiben hoch.</label>
+          <input class="bfi" id="coverletter" name="documents[]" type="file" style="margin-top: 10px;">
+ 
+        <label for="employment-reference">Lade dein Arbeitszeugnis hoch.<br><span>Du kannst mehrere Arbeitszeugnisse auf einmal auswählen.</span></label>
+          <input class="bfi" id="employment-reference" name="documents[]" type="file" style="margin-top: 10px;" multiple="">
        
+        <label for="other">Lade andere relevante Dokumente hoch.<br><span>Du kannst mehrere Dateien auf einmal auswählen.</span></label>
+          <input class="bfi" id="other" name="documents[]" type="file" style="margin-top: 10px;" multiple="">
     ';
 
         if($employmentType == 'permanent' || $employmentType == 'temporary'){
@@ -213,7 +226,7 @@ function redirect()
             ';
         }
 $content .= '
-      <p><input type="checkbox" id="privacy-policy-acceptance" name="privacy-policy-acceptance" required>Hiermit bestätige ich, dass ich die <a href="https://skopos.jobs.personio.de/privacy-policy?language=de">Datenschutzerklärung</a> zur Kenntnis genommen habe.*</label></p>
+      <p><input type="checkbox" id="privacy-policy-acceptance" name="privacy-policy-acceptance" required>Hiermit bestätige ich, dass ich die <a href="https://skopos.jobs.personio.de/privacy-policy?language=de" target="_blank">Datenschutzerklärung</a> zur Kenntnis genommen habe.*</label></p>
 
 <input id="submitButton" type="submit" value="Bewerbung abschicken" onclick="redirect();">
 
