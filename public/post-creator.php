@@ -117,9 +117,7 @@ function cron_job_task(){
                         
 						<form id="backform" action="'.$careerpage.'">
                         <button id="backbutton" type="submit"><i class="fa-solid fa-angle-left"></i> Alle Stellen anzeigen</button>
-                        </form>
-                        
-                      ';
+                        </form>';
 
         $content.= "<div id='shownot' class='shownot'>";
 
@@ -164,8 +162,42 @@ scrollTop: jQuery("#hide").offset().top
 
 <script type="text/javascript">
 function redirect()
-{
-    window.location.href="'.$redirectURL.'";
+{ var form1 = jQuery("#personioApplicationForm");
+   const form = new FormData(form1[0]);
+const settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://api.personio.de/recruiting/applicant",
+  "method": "POST",
+  "headers": {
+    "Accept": "application/json"
+  },
+  "processData": false,
+  "contentType": false,
+  "mimeType": "multipart/form-data",
+  "data": form
+};
+jQuery.ajax(settings).done(function (response,status) {
+  if(status == "success"){
+      window.location.href="'.$redirectURL.'";
+  }
+}).fail(function (response) {
+  const txt = response.responseText;
+  const obj = JSON.parse(txt);
+  var dict = {"Applicant already applied to this position." : "Fehler: Du hast dich bereits auf diese Stelle beworben."
+  "Unsupported extension or file greater than 20Mb." : "Fehler: Nicht unterstützte Dateiendung oder die Datei größer als 20Mb."
+  "Could not find the job position." : "Fehler: Die Stelle konnte nicht gefunden werden."
+  "This action is unauthorized." : "Fehler: Diese Aktion ist unzulässig."
+  "There was a problem while processing attachments. Try again later" : "Fehler: Bei der Verarbeitung der Dateien ist ein Problem aufgetreten. Bitte versuche es später noch einmal."
+  "Job position not published" : "Fehler: Stelle ist nicht veröffentlicht."
+  "Something went wrong, please try again later!" : "Es ist ein Fehler aufgetreten, bitte versuche es später noch einmal!"
+  "Service Unavailable" : "Fehler: Dienst nicht verfügbar."};
+  jQuery(".error").remove();
+  jQuery("#error-message").append("<span class=error>"+dict[obj.error]+"</span>");
+  jQuery("html, body").animate({
+scrollTop: jQuery("#scrollup").offset().top
+}, 1000);
+});
 }
 </script>
 
@@ -179,11 +211,19 @@ function redirect()
 </div>
 </div>
 <div id="form" class="form">
+<style>
+.error{
+color: red;
+font-weight: bold;
+}
+</style>
 
 <h3 id="formheadline">Wir haben Dir gerade noch gefehlt?</h3>
 <p> Dann freuen wir uns über Deine Bewerbung - inklusive Eintrittstermin und Gehaltsvorstellung.</p>
 
-<form id="personioApplicationForm" class="form-horizontal" method="POST" action="https://api.personio.de/recruiting/applicant" enctype="multipart/form-data">
+<div id="error-message"></div>
+
+<form target="" id="personioApplicationForm" class="form-horizontal" method="POST" onsubmit="redirect(); return false"  enctype="multipart/form-data">
 
         <input name="access_token" type="hidden" value="56eae2b614cc6d8d382a">
 
@@ -228,7 +268,7 @@ function redirect()
 $content .= '
       <p><input type="checkbox" id="privacy-policy-acceptance" name="privacy-policy-acceptance" required>Hiermit bestätige ich, dass ich die <a href="https://skopos.jobs.personio.de/privacy-policy?language=de" target="_blank">Datenschutzerklärung</a> zur Kenntnis genommen habe.*</label></p>
 
-<input id="submitButton" type="submit" value="Bewerbung abschicken" onclick="redirect();">
+<input id="submitButton" type="submit" value="Bewerbung abschicken">
 
 </form>
 
