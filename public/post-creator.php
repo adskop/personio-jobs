@@ -175,25 +175,23 @@ const settings = {
   "processData": false,
   "contentType": false,
   "mimeType": "multipart/form-data",
-  "data": form
+  "data": form 
 };
 jQuery.ajax(settings).done(function (response,status) {
   if(status == "success"){
-      window.location.href="'.$redirectURL.'";
+       jQuery(".error").remove();
+       jQuery(".success").remove();
+  jQuery("#success-message").append("<span class=success>Bewerbung erfolgreich abgeschickt.</span>");
+  jQuery("html, body").animate({
+scrollTop: jQuery("#scrollup").offset().top
+}, 1000);
   }
 }).fail(function (response) {
   const txt = response.responseText;
   const obj = JSON.parse(txt);
-  var dict = {"Applicant already applied to this position." : "Fehler: Du hast dich bereits auf diese Stelle beworben."
-  "Unsupported extension or file greater than 20Mb." : "Fehler: Nicht unterstützte Dateiendung oder die Datei größer als 20Mb."
-  "Could not find the job position." : "Fehler: Die Stelle konnte nicht gefunden werden."
-  "This action is unauthorized." : "Fehler: Diese Aktion ist unzulässig."
-  "There was a problem while processing attachments. Try again later" : "Fehler: Bei der Verarbeitung der Dateien ist ein Problem aufgetreten. Bitte versuche es später noch einmal."
-  "Job position not published" : "Fehler: Stelle ist nicht veröffentlicht."
-  "Something went wrong, please try again later!" : "Es ist ein Fehler aufgetreten, bitte versuche es später noch einmal!"
-  "Service Unavailable" : "Fehler: Dienst nicht verfügbar."};
+  jQuery(".success").remove()
   jQuery(".error").remove();
-  jQuery("#error-message").append("<span class=error>"+dict[obj.error]+"</span>");
+  jQuery("#error-message").append("<span class=error>Es ist ein Fehler aufgetreten, bitte versuche es später noch einmal! (" + obj.error + ")</span>");
   jQuery("html, body").animate({
 scrollTop: jQuery("#scrollup").offset().top
 }, 1000);
@@ -213,8 +211,20 @@ scrollTop: jQuery("#scrollup").offset().top
 <div id="form" class="form">
 <style>
 .error{
-color: red;
-font-weight: bold;
+color: red !important;
+font-weight: bold !important;
+}
+</style>
+
+<style>
+.success{
+color: green !important;
+font-weight: bold !important;
+}
+
+.success-message{
+color: green !important;
+font-weight: bold !important;
 }
 </style>
 
@@ -222,6 +232,8 @@ font-weight: bold;
 <p> Dann freuen wir uns über Deine Bewerbung - inklusive Eintrittstermin und Gehaltsvorstellung.</p>
 
 <div id="error-message"></div>
+<div id="success-message"></div>
+
 
 <form target="" id="personioApplicationForm" class="form-horizontal" method="POST" onsubmit="redirect(); return false"  enctype="multipart/form-data">
 
@@ -262,7 +274,7 @@ font-weight: bold;
 
         $content .= '
        <label for="salary_expectations">GEHALTSWUNSCH</label><br>
-            <input type="text" id="salary_expectations" name="salary_expectations" placeholder="" required> 
+            <input type="text" id="salary_expectations" name="salary_expectations" placeholder=""> 
             ';
         }
 $content .= '
